@@ -1,161 +1,149 @@
 (() => {
   const $ = (s,p=document) => p.querySelector(s);
   const $$ = (s,p=document) => [...p.querySelectorAll(s)];
+  const clamp = (v,min,max) => Math.max(min,Math.min(max,v));
+  const lerp = (a,b,t) => a+(b-a)*t;
+  const ease = t => t*t*(3-2*t);
+
   const experience = $('[data-experience]');
   const preloader = $('[data-preloader]');
   const loadBar = $('[data-load-bar]');
   const loadValue = $('[data-load-value]');
-  const stories = $$('[data-story]');
-  const scenarios = $$('[data-scenario]');
-  const navButtons = $$('[data-go]');
-  const progress = $('[data-progress]');
-  const current = $('[data-current]');
+  const chapters = $$('[data-chapter]');
+  const fx = $$('[data-fx]');
+  const nav = $$('[data-jump]');
+  const currentEl = $('[data-current]');
   const sceneLabel = $('[data-scene-label]');
   const systemLabel = $('[data-system-label]');
+  const giantA = $('[data-giant-a]');
+  const giantB = $('[data-giant-b]');
   const iframe = $('#api-frame');
-  const labels = ['BMW REVEAL','VEHICLE CHECK','ECU CALIBRATION','HARDWARE SYSTEM','POWER DELIVERY','VALIDATION','PROJECT START'];
-  const systemLabels = ['VEHICLE LINK // READY','DIAGNOSTIC // ACTIVE','ECU MAP // CALIBRATING','HARDWARE MAP // SYNC','BOOST CONTROL // LIVE','INSORIC DATA // VERIFIED','PROJECT CHANNEL // OPEN'];
-  const desktopUid = '3fdc4ab04e384ec5bdc26eed6700517f';
-  const mobileUid = '72a7165bfb8c455e9dd8206e40e3347a';
-  const uid = matchMedia('(max-width:820px)').matches ? mobileUid : desktopUid;
-  let api = null;
-  let active = 0;
-  let lastChange = 0;
-  let touchStart = 0;
-  let baseCamera = null;
+  const form = $('[data-mail-form]');
 
-  experience.dataset.ready = 'false';
-  let fake = 0;
-  const timer = setInterval(() => {
-    fake = Math.min(fake + Math.ceil(Math.random()*8), 88);
-    loadBar.style.width = fake + '%';
-    loadValue.textContent = fake + '%';
-  }, 120);
+  const labels = ['BMW REVEAL','VEHICLE DIAGNOSTIC','ECU CALIBRATION','HARDWARE SYSTEM','POWER DELIVERY','INSORIC VALIDATION','PROJECT START'];
+  const systemLabels = ['COMMERCIAL SEQUENCE // READY','VEHICLE DATA // READING','CUSTOM MAP // CALIBRATING','HARDWARE FLOW // SYNC','BOOST CONTROL // LIVE','MEASUREMENT // VERIFIED','PROJECT CHANNEL // OPEN'];
+  const giantWords = [
+    ['BEYOND','STANDARD'],
+    ['READ','THE CAR'],
+    ['YOUR','OWN MAP'],
+    ['ONE','SYSTEM'],
+    ['POWER','CONTROL'],
+    ['MEASURE','PROVE'],
+    ['START','YOUR PSÒ‘PÕ	×BˆNÂ‚ˆÛÛœİ\ÚİÜZYH	ÌÙ™ÍXŒLÎXÍX™Ì™YYÌLMÙ‰ÎÂˆÛÛœİ[Øš[UZYH	ÌYX™LÙMŒMØY˜LX˜™YNLÉÎÂˆÛÛœİZYHX]ÚYYXJ	ÊX^]ÚYŒ
+IÊK›X]Ú\ÈÈ[Øš[UZYˆ\ÚİÜZYÂ‚ˆ]\HH[Âˆ]˜\ÙPØ[Y\˜HH[Âˆ]\™Ù]›ÙÜ™\ÜÈHÂˆ]™[™\™Y›ÙÜ™\ÜÈHÂˆ]Xİ]™TØÙ[™HHÂˆ]\İØÙ[™HHÂˆ]İXÚHHÂˆ]\İØ[Y\˜UXÚÈHÂˆ]˜ZÙSØYHÂˆ]\Ô™XYHH˜[ÙNÂ‚ˆÛÛœİØ[Y\˜RÙ^\ÈHÂˆŞX]Î‹K]Ú‹N˜Y]\ÎŒKŒŒNŒŒ›İŒÎKˆŞX]Î‹KŒ]Ú‹Î˜Y]\Î‹‹‹Œ‹N‹Œ‹Œ›İŒ_KˆŞX]Î‹L‹]Ú‹˜Y]\Î‹Í‹‹Œ‹N‹ŒŒ›İŒßKˆŞX]ÎŒKŒ]Ú‹K˜Y]\Î‹ŒN‹Œ‹Œ›İŒÌKˆŞX]ÎŒ‹Œ]Ú‹‹˜Y]\Î‹‹ŒN‹ŒËŒ›İŒ_KˆŞX]ÎŒ‹Í]ÚŒKŒ˜Y]\ÎŒKŒŒNŒŒ›İŒÍ_KˆŞX]ÎŒËŒK]Ú‹N˜Y]\ÎŒKŒL‹ŒNŒŒ›İŒÎ_BˆNÂ‚ˆÛÛœİØY\•[Y\ˆHÙ][\˜[
 
-  function doneLoading(){
-    clearInterval(timer);
-    loadBar.style.width = '100%';
-    loadValue.textContent = '100%';
-    experience.dataset.ready = 'true';
-    setTimeout(() => preloader.classList.add('done'), 260);
-  }
 
-  function animateCounters(scope){
-    $$('[data-counter]', scope).forEach(el => {
-      const end = Number(el.dataset.counter);
-      const decimal = String(end).includes('.');
-      const start = performance.now();
-      const run = t => {
-        const p = Math.min((t-start)/900,1);
-        const v = end * (1-Math.pow(1-p,3));
-        el.textContent = decimal ? v.toFixed(1) : Math.round(v);
-        if(p<1) requestAnimationFrame(run);
-      };
-      requestAnimationFrame(run);
-    });
-  }
+HOˆÂˆ˜ZÙSØYHX]›Z[Š˜ZÙSØY
+ÈX]˜ÙZ[
+X]œ˜[™ÛJ
+JÊKL
+NÂˆØY˜\‹œİ[KÚYH˜ZÙSØY
+ÉÉIÎÂˆØY˜[YK^ÛÛ[H˜ZÙSØY
+ÉÉIÎÂˆKLŒ
+NÂ‚ˆ[˜İ[ÛˆÛ™SØY[™Ê
+^ÂˆYŠ\Ô™XYJH™]\›Âˆ\Ô™XYHHYNÂˆÛX\’[\˜[
+ØY\•[Y\ŠNÂˆØY˜\‹œİ[KÚYH	ÌL	IÎÂˆØY˜[YK^ÛÛ[H	ÌL	IÎÂˆ^\šY[˜ÙK™]\Ù]œ™XYHH	İYIÎÂˆÙ][Y[İ]
 
-  function makeCamera(index){
-    if(!baseCamera) return null;
-    const t = baseCamera.target;
-    const dx = baseCamera.position[0]-t[0];
-    const dy = baseCamera.position[1]-t[1];
-    const dz = baseCamera.position[2]-t[2];
-    const r = Math.max(0.1, Math.hypot(dx,dz));
-    const baseYaw = Math.atan2(dz,dx);
-    const cfg = [
-      {yaw:-0.38, pitch:1.00, radius:1.02, tx:0,ty:0,tz:0,fov:36},
-      {yaw:0.08, pitch:.78, radius:.86, tx:.02,ty:.02,tz:0,fov:31},
-      {yaw:0.58, pitch:.86, radius:.82, tx:.01,ty:.03,tz:0,fov:30},
-      {yaw:1.35, pitch:.92, radius:.9, tx:0,ty:.01,tz:0,fov:32},
-      {yaw:2.08, pitch:.86, radius:.88, tx:0,ty:.02,tz:0,fov:31},
-      {yaw:2.72, pitch:1.04, radius:1.0, tx:0,ty:0,tz:0,fov:35},
-      {yaw:3.35, pitch:1.02, radius:1.08, tx:0,ty:0,tz:0,fov:37}
-    ][index];
-    const yaw = baseYaw + cfg.yaw;
-    const horizontal = r * cfg.radius;
-    const pos = [
-      t[0] + Math.cos(yaw)*horizontal,
-      t[1] + dy*cfg.pitch,
-      t[2] + Math.sin(yaw)*horizontal
-    ];
-    const target = [t[0]+cfg.tx,t[1]+cfg.ty,t[2]+cfg.tz];
-    return {pos,target,fov:cfg.fov};
-  }
 
-  function moveCamera(index){
-    if(!api || !baseCamera) return;
-    const cam = makeCamera(index);
-    api.setCameraEasing('easeInOutQuad');
-    api.setFov(cam.fov);
-    api.setCameraLookAt(cam.pos, cam.target, 1.5);
-  }
+OOœ™[ØY\‹˜Û\ÜÓ\İ˜Y
+	ÙÛ™IÊKÌ
+NÂˆB‚ˆ[˜İ[Ûˆ[š[X]PÛİ[\œÊØÛÜJ^Âˆ		
+	ÖÙ]KXÛİ[\—IËØÛÜJK™›Ü‘XXÚ
+[OÂˆÛÛœİ[™S[X™\Š[™]\Ù]˜Ûİ[\ŠNØÛÛœİXÚ[X[Tİš[™Ê[™
+Kš[˜ÛY\Ê	Ë‰ÊNØÛÛœİİ\\\™›Ü›X[˜ÙK››İÊ
+NÂˆÛÛœİ[]OØÛÛœİSX]›Z[Š
+\İ\
+KÎLJNØÛÛœİ˜[YOY[™
+ŠKSX]œİÊK\ÊJNÙ[^ÛÛ[YXÚ[X[İ˜[YKÑš^Y
+JN“X]œ›İ[™
+˜[YJNÚYŠJ\™\]Y\İ[š[X][Û‘œ˜[YJ[Š_NÂˆ™\]Y\İ[š[X][Û‘œ˜[YJ[ŠNÂˆJNÂˆB‚ˆ[˜İ[ÛˆÙ]Xİ]™TØÙ[™J[™^
+^Âˆ[™^XÛ[\
+[™^Ú\\œË›[™İLJNÂˆYŠ[™^OOXXİ]™TØÙ[™JH™]\›Âˆ\İØÙ[™OXXİ]™TØÙ[™NÂˆXİ]™TØÙ[™OZ[™^ÂˆÚ\\œË™›Ü‘XXÚ
 
-  function setScene(index, force=false){
-    index = Math.max(0, Math.min(stories.length-1,index));
-    if(index===active && !force) return;
-    active = index;
-    stories.forEach((el,i)=>el.classList.toggle('is-active',i===index));
-    scenarios.forEach((el,i)=>el.classList.toggle('is-active',i===index));
-    navButtons.forEach(btn=>btn.classList.toggle('is-active',Number(btn.dataset.go)===index));
-    progress.style.width = (index/(stories.length-1)*100)+'%';
-    current.textContent = String(index+1).padStart(2,'0');
-    sceneLabel.textContent = labels[index];
-    systemLabel.textContent = systemLabels[index];
-    animateCounters(stories[index]);
-    animateCounters(scenarios[index]);
-    moveCamera(index);
-  }
+[JOO™[˜Û\ÜÓ\İÙÙÛJ	Ú\ËXXİ]™IËOOOZ[™^
+JNÂˆ™›Ü‘XXÚ
 
-  function step(dir){
-    const now = performance.now();
-    if(now-lastChange<700) return;
-    lastChange = now;
-    setScene(active+dir);
-  }
+[JOO™[˜Û\ÜÓ\İÙÙÛJ	Ú\ËXXİ]™IËOOOZ[™^
+JNÂˆ˜]‹™›Ü‘XXÚ
+[O™[˜Û\ÜÓ\İÙÙÛJ	Ú\ËXXİ]™IË[X™\Š[™]\Ù]š[\
+OOOZ[™^
+JNÂˆİ\œ™[[^ÛÛ[Tİš[™Ê[™^
+ÌJKœYİ\
+‹	Ì	ÊNÂˆØÙ[™SX™[^ÛÛ[[X™[ÖÚ[™^NÂˆŞ\İ[SX™[^ÛÛ[\Ş\İ[SX™[ÖÚ[™^NÂˆÚX[K^ÛÛ[YÚX[ÛÜ™ÖÚ[™^VÌNÂˆÚX[‹^ÛÛ[YÚX[ÛÜ™ÖÚ[™^VÌWNÂˆ[š[X]PÛİ[\œÊÚ\\œÖÚ[™^JNØ[š[X]PÛİ[\œÊÚ[™^JNÂˆ^\šY[˜ÙK˜Û\ÜÓ\İœ™[[İ™J	Ú\ËXİ][™ÉÊNİ›ÚY^\šY[˜ÙK›Ù™œÙ]ÚYÙ^\šY[˜ÙK˜Û\ÜÓ\İ˜Y
+	Ú\ËXİ][™ÉÊNÂˆÙ][Y[İ]
 
-  window.addEventListener('wheel', e => {
-    e.preventDefault();
-    if(Math.abs(e.deltaY)>8) step(e.deltaY>0?1:-1);
-  }, {passive:false});
-  window.addEventListener('touchstart',e=>touchStart=e.touches[0].clientY,{passive:true});
-  window.addEventListener('touchend',e=>{const d=touchStart-e.changedTouches[0].clientY;if(Math.abs(d)>38)step(d>0?1:-1)},{passive:true});
-  window.addEventListener('keydown',e=>{
-    if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();step(1)}
-    if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();step(-1)}
-  });
-  navButtons.forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();setScene(Number(btn.dataset.go))}));
 
-  $('[data-mail-form]').addEventListener('submit',e=>{
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const subject = 'Fahrzeuganfrage Ã¼ber BROO BMW 3D Experience';
-    const body = `Hallo BROO Performance,\n\nich interessiere mich fÃ¼r eine Fahrzeugoptimierung.\n\nMarke / Modell: ${data.get('vehicle')}\nBaujahr / Motor: ${data.get('engine')}\nSerienleistung: ${data.get('power')||'-'}\n\nBitte senden Sie mir eine erste EinschÃ¤tzung.\n`;
-    location.href = `mailto:info@broo-performance.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  });
+OO™^\šY[˜ÙK˜Û\ÜÓ\İœ™[[İ™J	Ú\ËXİ][™ÉÊKŒŒ
+NÂˆB‚ˆ[˜İ[ÛˆØ[Y\˜Qœ›ÛRÙ^JÙ^J^ÂˆÛÛœİX˜\ÙPØ[Y\˜K\™Ù]ÂˆÛÛœİX˜\ÙPØ[Y\˜KœÜÚ][Û–ÌK]ÌNÂˆÛÛœİOX˜\ÙPØ[Y\˜KœÜÚ][Û–ÌWK]ÌWNÂˆÛÛœİX˜\ÙPØ[Y\˜KœÜÚ][Û–Ì—K]Ì—NÂˆÛÛœİ˜Y]\ÏSX]›X^
+ŒKX]š\İ
+ŠJJšÙ^Kœ˜Y]\ÎÂˆÛÛœİ˜\ÙVX]ÏSX]˜][ŒŠ‹
+NÂˆÛÛœİX]ÏX˜\ÙVX]ÊÚÙ^KX]ÎÂˆ™]\›ˆÂˆÜÚ][Û–İÌJÓX]˜ÛÜÊX]ÊJœ˜Y]\ËÌWJÙJšÙ^Kœ]ÚÌ—JÓX]œÚ[ŠX]ÊJœ˜Y]\×Kˆ\™Ù]–İÌJÚÙ^KÌWJÚÙ^KKÌ—JÚÙ^K—Kˆ›İšÙ^K™›İ‚ˆNÂˆB‚ˆ[˜İ[Ûˆ\]PØ[Y\˜JØÙ[™Q›Ø]›İÊ^ÂˆYŠX\_X˜\ÙPØ[Y\˜_›İË[\İØ[Y\˜UXÚÏMJH™]\›Âˆ\İØ[Y\˜UXÚÏ[›İÎÂˆÛÛœİOSX]™›ÛÜŠØÙ[™Q›Ø]
+NØÛÛœİSX]›Z[ŠJÌKØ[Y\˜RÙ^\Ë›[™İLJNØÛÛœİYX\ÙJØÙ[™Q›Ø]XJNÂˆÛÛœİØOXØ[Y\˜Qœ›ÛRÙ^JØ[Y\˜RÙ^\ÖØWJNØÛÛœİØXØ[Y\˜Qœ›ÛRÙ^JØ[Y\˜RÙ^\ÖØ—JNÂˆÛÛœİÜÏXØKœÜÚ][Û‹›X\
 
-  if(window.Sketchfab && iframe){
-    const client = new Sketchfab('1.12.1',iframe);
-    client.init(uid,{
-      autostart:1,camera:0,autospin:0,dnt:1,scrollwheel:0,double_click:0,
-      ui_controls:0,ui_infos:0,ui_help:0,ui_settings:0,ui_vr:0,ui_fullscreen:0,ui_annotations:0,ui_stop:0,ui_inspector:0,
-      success(instance){
-        api = instance;
-        api.start();
-        api.addEventListener('viewerready',()=>{
-          api.setUserInteraction(false);
-          api.getCameraLookAt((err,camera)=>{
-            if(!err){baseCamera=camera;setScene(0,true)}
-            doneLoading();
-          });
-        });
-      },
-      error(){doneLoading()}
-    });
-  } else {
-    doneLoading();
-  }
+‹JOO›\œ
+‹Ø‹œÜÚ][Û–ÚWK
+JNÂˆÛÛœİ\™Ù]XØK\™Ù]›X\
 
-  setTimeout(()=>{if(!preloader.classList.contains('done'))doneLoading()},6000);
-  setScene(0,true);
-})();
+‹JOO›\œ
+‹Ø‹\™Ù]ÚWK
+JNÂˆ\KœÙ]›İŠ\œ
+ØK™›İ‹Ø‹™›İ‹
+JNÂˆ\KœÙ]Ø[Y\˜SÛÚĞ]
+ÜË\™Ù]Œ
+NÂˆB‚ˆ[˜İ[Ûˆ™[™\Š›İÊ^Âˆ™[™\™Y›ÙÜ™\ÜÈ
+ÏH
+\™Ù]›ÙÜ™\ÜË\™[™\™Y›ÙÜ™\ÜÊJ‹ŒNÂˆYŠX]˜XœÊ\™Ù]›ÙÜ™\ÜË\™[™\™Y›ÙÜ™\ÜÊOŒ
+H™[™\™Y›ÙÜ™\ÜÏ]\™Ù]›ÙÜ™\ÜÎÂˆÛÛœİX^XÚ\\œË›[™İLNÂˆÛÛœİØÙ[™Q›Ø]\™[™\™Y›ÙÜ™\ÜÊ›X^ÂˆÛÛœİ™X\™\İSX]œ›İ[™
+ØÙ[™Q›Ø]
+NÂˆÛÛœİØØ[LKSX]›Z[ŠKX]˜XœÊØÙ[™Q›Ø][™X\™\İ
+JŒKÍJNÂˆØİ[Y[™Øİ[Y[[[Y[œİ[KœÙ]›Ü\J	ËK\›ÙÜ™\ÜÉË™[™\™Y›ÙÜ™\ÜËÑš^Y
+JJNÂˆØİ[Y[™Øİ[Y[[[Y[œİ[KœÙ]›Ü\J	ËK\ØÙ[™IËØÙ[™Q›Ø]Ñš^Y
+
+JNÂˆØİ[Y[™Øİ[Y[[[Y[œİ[KœÙ]›Ü\J	ËK[ØØ[	ËØØ[Ñš^Y
+
+JNÂˆÙ]Xİ]™TØÙ[™J™X\™\İ
+NÂˆ\]PØ[Y\˜JØÙ[™Q›Ø]›İÊNÂˆ™\]Y\İ[š[X][Û‘œ˜[YJ™[™\ŠNÂˆB‚ˆ[˜İ[ÛˆY›ÙÜ™\ÜÊ[J^İ\™Ù]›ÙÜ™\ÜÏXÛ[\
+\™Ù]›ÙÜ™\ÜÊÙ[KJ_BˆÚ[™İË˜Y]™[\İ[™\Š	İÚY[	ËOOÙKœ™]™[Y˜][
+
+NØY›ÙÜ™\ÜÊK™[VJ‹ŒÌŠ_KÜ\ÜÚ]™N™˜[Ù_JNÂˆÚ[™İË˜Y]™[\İ[™\Š	İİXÚİ\	ËOOİİXÚOYKİXÚ\ÖÌK˜ÛY[_KÜ\ÜÚ]™NY_JNÂˆÚ[™İË˜Y]™[\İ[™\Š	İİXÚ[İ™IËOOØÛÛœİOYKİXÚ\ÖÌK˜ÛY[NØÛÛœİ]İXÚK^NİİXÚO^NØY›ÙÜ™\ÜÊ
+‹ŒLÍJNÙKœ™]™[Y˜][
+
+_KÜ\ÜÚ]™N™˜[Ù_JNÂˆÚ[™İË˜Y]™[\İ[™\Š	ÚÙ^YİÛ‰ËOOÂˆYŠÉĞ\œ›İÑİÛ‰Ë	Ğ\œ›İÔšYÚ	Ë	ÔYÙQİÛ‰Ë	È	×Kš[˜ÛY\ÊKšÙ^JJ^ÙKœ™]™[Y˜][
+
+Nİ\™Ù]›ÙÜ™\ÜÏXÛ[\
+
+Xİ]™TØÙ[™JÌJKÊÚ\\œË›[™İLJKJ_BˆYŠÉĞ\œ›İÕ\	Ë	Ğ\œ›İÓY	Ë	ÔYÙU\	×Kš[˜ÛY\ÊKšÙ^JJ^ÙKœ™]™[Y˜][
+
+Nİ\™Ù]›ÙÜ™\ÜÏXÛ[\
+
+Xİ]™TØÙ[™KLJKÊÚ\\œË›[™İLJKJ_BˆYŠKšÙ^OOOIÒÛYIÊ]\™Ù]›ÙÜ™\ÜÏLÚYŠKšÙ^OOOIÑ[™	Ê]\™Ù]›ÙÜ™\ÜÏLNÂˆJNÂˆ˜]‹™›Ü‘XXÚ
+[O™[˜Y]™[\İ[™\Š	ØÛXÚÉËOOÙKœ™]™[Y˜][
+
+NØÛÛœİOS[X™\Š[™]\Ù]š[\
+NÚYŠS[X™\‹š\Ó˜SŠJJ]\™Ù]›ÙÜ™\ÜÏZKÊÚ\\œË›[™İLJ_JJNÂ‚ˆ›Ü›OË˜Y]™[\İ[™\Š	ÜİX›Z]	ËOOÂˆKœ™]™[Y˜][
+
+NØÛÛœİ]O[™]È›Ü›Q]JK˜İ\œ™[\™Ù]
+NÂˆÛÛœİİXš™XİIÑ˜Z™]YØ[™œ˜YÙH0ï™\ˆ”“ÓÈ“UÈÛÛ[Y\˜ÚX[^\šY[˜ÙIÎÂˆÛÛœİ›ÙOX[È”“ÓÈ\™›Ü›X[˜ÙK—šXÚ[\™\ÜÚY\™HZXÚ°ïˆZ[™H˜Z™]YÛÜ[ZY\[™Ë——“X\šÙHÈ[Ù[ˆ	Ù]K™Ù]
+	İ™ZXÛIÊ_W˜]Z˜ZˆÈ[İÜˆ	Ù]K™Ù]
+	Ù[™Ú[™IÊ_W”Ù\šY[›Z\İ[™Îˆ	Ù]K™Ù]
+	ÜİÙ\‰Ê_	ËIßW—š]HÙ[™[ˆÚYHZ\ˆZ[™H\œİHZ[œØÚ0é[™Ë—˜ÂˆØØ][Û‹š™YXXZ[Îš[™›Ğœ›ÛË\\™›Ü›X[˜ÙK™OÜİXš™XİIÙ[˜ÛÙUT’PÛÛ\Û™[
+İXš™Xİ
+_I˜›ÙOIÙ[˜ÛÙUT’PÛÛ\Û™[
+›ÙJ_XÂˆJNÂ‚ˆYŠÚ[™İË”ÚÙ]Ú˜X‰‰šYœ˜[YJ^ÂˆÛÛœİÛY[[™]ÈÚÙ]Ú˜XŠ	ÌKŒL‹ŒIËYœ˜[YJNÂˆÛY[š[š]
+ZYÂˆ]]Üİ\ŒKØ[Y\˜NŒ]]ÜÜ[ŒŒKØÜ›ÛÚY[ŒİX›WØÛXÚÎŒ˜[œÜ\™[ŒKˆZWØÛÛ›ÛÎŒZWÚ[™›ÜÎŒZWÚ[ŒZWÜÙ][™ÜÎŒZWİœŒZWÙ[ØÜ™Y[ŒZWØ[››İ][ÛœÎŒZWÜİÜŒZWÚ[œÜXİÜŒZWİØ]\›X\š×Û[šÎŒˆİXØÙ\ÜÊ[œİ[˜ÙJ^Âˆ\OZ[œİ[˜ÙNØ\Kœİ\
+
+NØ\K˜Y]™[\İ[™\Š	İšY]Ù\œ™XYIË
+
+OOÂˆ\KœÙ]\Ù\’[\˜Xİ[ÛŠ˜[ÙJNÂˆ\K™Ù]Ø[Y\˜SÛÚĞ]
+
+\œ‹Ø[Y\˜JOOÚYŠY\œŠ^Ø˜\ÙPØ[Y\˜OXØ[Y\˜Nİ\]PØ[Y\˜J\™›Ü›X[˜ÙK››İÊ
+J_YÛ™SØY[™Ê
+_JNÂˆJNÂˆKˆ\œ›ÜŠ
+^ÙÛ™SØY[™Ê
+_BˆJNÂˆY[ÙHÛ™SØY[™Ê
+NÂ‚ˆÙ][Y[İ]
+Û™SØY[™ËÌ
+NÂˆÚ\\œÖÌK˜Û\ÜÓ\İ˜Y
+	Ú\ËXXİ]™IÊNÙÌK˜Û\ÜÓ\İ˜Y
+	Ú\ËXXİ]™IÊNÂˆ™\]Y\İ[š[X][Û‘œ˜[YJ™[™\ŠNÂŸJJ
+NÂ
