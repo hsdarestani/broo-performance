@@ -2,168 +2,187 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>BROO Performance 3D — Premium Experience</title>
-  <meta name="description" content="BROO Performance 3D Experience — individuelle ECU-Abstimmung, Performance-Hardware und realistische Fahrzeuginszenierung in einem premium 3D Showcase.">
-  <meta name="theme-color" content="#070707">
-  <meta property="og:title" content="BROO Performance 3D — Premium Experience">
-  <meta property="og:description" content="Dark premium automotive showcase with realistic 3D car, minimal UI and cinematic BROO branding.">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>BROO Performance 3D — BMW M8 Tuning Experience</title>
+  <meta name="description" content="Interaktive BROO Performance Experience mit realistischem BMW M8, Diagnose, individueller ECU-Kalibrierung, Hardware-Konzept und Leistungsvalidierung.">
+  <meta name="theme-color" content="#050505">
+  <meta property="og:title" content="BROO Performance 3D — BMW M8 Tuning Experience">
+  <meta property="og:description" content="Vom Fahrzeug-Check bis zur validierten Performance — als cineastische 3D Experience.">
   <meta property="og:type" content="website">
-  <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link rel="stylesheet" href="styles.css">
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
 </head>
 <body>
-  <div class="preloader" data-preloader aria-live="polite">
-    <img class="preloader-logo" src="assets/broo-logo.svg" alt="BROO Performance">
-    <div class="preloader-line"><i data-load-bar></i></div>
-    <div class="preloader-meta"><span>PREMIUM 3D EXPERIENCE</span><strong data-load-value>0%</strong></div>
+  <div class="preloader" data-preloader>
+    <img src="assets/broo-logo.svg" alt="BROO Performance">
+    <div class="loader"><i data-load-bar></i></div>
+    <div class="loader-meta"><span>BMW PERFORMANCE EXPERIENCE</span><b data-load-value>0%</b></div>
   </div>
 
-  <div class="experience">
-    <div class="bg-layer bg-layer-1"></div>
-    <div class="bg-layer bg-layer-2"></div>
-    <div class="noise" aria-hidden="true"></div>
+  <div class="experience" data-experience>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+    <div class="grain"></div>
 
     <header class="topbar">
-      <a class="brand" href="#" aria-label="BROO Performance" data-go="0">
+      <a class="brand" href="#" data-go="0" aria-label="BROO Performance Start">
         <img src="assets/broo-logo.svg" alt="BROO Performance">
       </a>
-      <div class="topbar-status"><span class="dot"></span><span data-system-label>INDIVIDUAL PERFORMANCE // READY</span></div>
-      <a class="topbar-cta" href="mailto:info@broo-performance.de?subject=Anfrage%20BROO%20Performance">PROJEKT STARTEN</a>
+      <div class="system"><span></span><b data-system-label>VEHICLE LINK // READY</b></div>
+      <a class="top-cta" href="mailto:info@broo-performance.de?subject=Fahrzeuganfrage%20BROO%203D">PROJEKT STARTEN</a>
     </header>
 
-    <aside class="nav-rail" aria-label="Szenen Navigation">
-      <button class="is-active" data-go="0"><span>01</span><b>Hero</b></button>
-      <button data-go="1"><span>02</span><b>Software</b></button>
-      <button data-go="2"><span>03</span><b>Power</b></button>
-      <button data-go="3"><span>04</span><b>Hardware</b></button>
-      <button data-go="4"><span>05</span><b>Dyno</b></button>
-      <button data-go="5"><span>06</span><b>Contact</b></button>
-    </aside>
+    <div class="viewer-shell">
+      <iframe id="api-frame" title="Realistisches BMW M8 3D Modell" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+      <div class="viewer-shade"></div>
+      <div class="floor-glow"></div>
 
-    <main class="stage">
-      <section class="copy-column">
-        <article class="scene-card is-active" data-scene-card="0">
-          <div class="eyebrow"><span>01</span> BROO PERFORMANCE · EST. 2013</div>
-          <h1>INDIVIDUAL<br><em>POWER.</em><br>NO 0815 TUNING.</h1>
-          <p>Keine Massenlösung, keine Files von der Stange. BROO entwickelt individuelle Software- und Hardware-Setups mit Fokus auf Fahrbarkeit, Haltbarkeit und ein sauberes Endergebnis.</p>
-          <div class="actions">
-            <button class="btn btn-primary" data-go="1">EXPERIENCE STARTEN</button>
-            <a class="btn btn-ghost" href="mailto:info@broo-performance.de?subject=Anfrage%20BROO%20Performance">FAHRZEUG ANFRAGEN</a>
-          </div>
-          <div class="stats">
-            <div><strong>2013</strong><span>GRÜNDUNG</span></div>
-            <div><strong>12</strong><span>STÜTZPUNKTE</span></div>
-            <div><strong>100%</strong><span>INDIVIDUELL</span></div>
-          </div>
-        </article>
+      <div class="scenario-layer" aria-hidden="true">
+        <div class="scenario scenario-0 is-active" data-scenario="0">
+          <div class="light-sweep"></div>
+          <div class="hero-mark">BMW M8 // BROO PERFORMANCE</div>
+        </div>
 
-        <article class="scene-card" data-scene-card="1">
-          <div class="eyebrow"><span>02</span> CUSTOM ECU SOFTWARE</div>
-          <h2>KEIN DATENBANK-<br><em>FILE.</em></h2>
-          <p>Die Kalibrierung entsteht passend zu Fahrzeug, Laufleistung, Hardware und Einsatzzweck. Ziel ist nicht nur Peak-Leistung, sondern ein sauberes, belastbares Setup.</p>
-          <ul class="feature-list">
-            <li><b>Stage 1–3</b><span>Individuell abgestimmt statt generisch.</span></li>
-            <li><b>Torque Control</b><span>Harmonische und sichere Entfaltung.</span></li>
-            <li><b>Reversible</b><span>Auf Wunsch rückrüstbar.</span></li>
-          </ul>
-        </article>
-
-        <article class="scene-card" data-scene-card="2">
-          <div class="eyebrow"><span>03</span> POWER DELIVERY</div>
-          <h2>MEHR DRUCK.<br><em>MEHR KONTROLLE.</em></h2>
-          <p>Performance heißt bei BROO: spontanes Ansprechverhalten, saubere Drehmomentkurve und ein Auto, das sich im Alltag genauso überzeugend fährt wie beim schnellen Abruf.</p>
-          <div class="metric-grid">
-            <div><small>BOOST</small><strong data-counter="1.8">0.0</strong><span>BAR</span></div>
-            <div><small>RESPONSE</small><strong data-counter="98">0</strong><span>%</span></div>
-            <div><small>STATUS</small><strong>LIVE</strong><span>CALIBRATION</span></div>
+        <div class="scenario scenario-1" data-scenario="1">
+          <div class="scan-beam"></div>
+          <div class="diagnostic-card">
+            <small>VEHICLE CHECK</small>
+            <div><span>ECU RESPONSE</span><b>OK</b></div>
+            <div><span>BOOST LEAK</span><b>NONE</b></div>
+            <div><span>THERMAL LOAD</span><b>NORMAL</b></div>
           </div>
-        </article>
+          <div class="corner-label corner-label-a">01 // READ ORIGINAL DATA</div>
+          <div class="corner-label corner-label-b">02 // CHECK HARDWARE</div>
+        </div>
 
-        <article class="scene-card" data-scene-card="3">
-          <div class="eyebrow"><span>04</span> PERFORMANCE HARDWARE</div>
-          <h2>SOFTWARE +<br><em>HARDWARE</em><br>ALS SYSTEM.</h2>
-          <p>Downpipes, Ladeluftkühler, Abgasanlagen und Turbolader werden nicht isoliert betrachtet — sondern als ein Setup, das zusammen funktioniert.</p>
-          <div class="hardware-grid">
-            <div><small>01</small><strong>TURBOLADER</strong><span>Mehr Luftmasse, mehr Potenzial.</span></div>
-            <div><small>02</small><strong>LADELUFT</strong><span>Thermische Stabilität unter Last.</span></div>
-            <div><small>03</small><strong>ABGAS</strong><span>Besserer Flow und Response.</span></div>
+        <div class="scenario scenario-2" data-scenario="2">
+          <div class="ecu-grid"></div>
+          <div class="map-card">
+            <small>ORIGINAL DATA</small>
+            <div class="map-row"><span>RPM</span><i style="--w:84%"></i></div>
+            <div class="map-row"><span>LOAD</span><i style="--w:72%"></i></div>
+            <div class="map-row"><span>BOOST</span><i style="--w:91%"></i></div>
+            <div class="map-row"><span>TORQUE</span><i style="--w:78%"></i></div>
+            <strong>CUSTOM CALIBRATION ACTIVE</strong>
           </div>
-        </article>
+        </div>
 
-        <article class="scene-card" data-scene-card="4">
-          <div class="eyebrow"><span>05</span> VALIDATION</div>
-          <h2>NICHT NUR GEFÜHLT.<br><em>MESSBAR.</em></h2>
-          <p>Mit Insoric-Messung unter realen Straßenbedingungen wird sichtbar, was das Fahrzeug tatsächlich leistet. So wird Tuning nachvollziehbar und sauber dokumentiert.</p>
-          <div class="dyno-box">
-            <strong>POWER CURVE</strong>
-            <div class="chart"><i></i></div>
-            <div class="legend"><span>RPM</span><span>POWER / TORQUE</span></div>
-          </div>
-        </article>
+        <div class="scenario scenario-3" data-scenario="3">
+          <div class="hotspot hotspot-turbo"><i></i><span>TURBOLADER</span></div>
+          <div class="hotspot hotspot-cooling"><i></i><span>LADELUFT</span></div>
+          <div class="hotspot hotspot-exhaust"><i></i><span>ABGASANLAGE</span></div>
+          <svg class="flow-lines" viewBox="0 0 1000 600" preserveAspectRatio="none">
+            <path d="M140 390 C330 280 450 250 580 230 S800 160 910 210"/>
+            <path d="M130 430 C340 350 540 340 900 360"/>
+          </svg>
+        </div>
 
-        <article class="scene-card scene-card-contact" data-scene-card="5">
-          <div class="eyebrow"><span>06</span> START YOUR PROJECT</div>
-          <h2>BEREIT FÜR DEIN<br><em>NÄCHSTES LEVEL?</em></h2>
-          <p>Sende uns kurz die Fahrzeugdaten. Wir melden uns mit einer ersten Einschätzung zu Software, Hardware und sinnvoller Ausbaustufe.</p>
-          <form class="contact-form" data-mail-form>
-            <label><span>MARKE / MODELL</span><input name="vehicle" placeholder="z. B. BMW M340i" required></label>
-            <label><span>BAUJAHR / MOTOR</span><input name="engine" placeholder="z. B. 2021 · B58" required></label>
-            <label><span>SERIENLEISTUNG</span><input name="power" placeholder="z. B. 374 PS"></label>
-            <button type="submit" class="btn btn-primary">ANFRAGE VORBEREITEN</button>
-          </form>
-          <div class="contact-links">
-            <a href="tel:+4915121993268">+49 151 21993268</a>
-            <a href="mailto:info@broo-performance.de">info@broo-performance.de</a>
+        <div class="scenario scenario-4" data-scenario="4">
+          <div class="power-ring power-ring-a"></div>
+          <div class="power-ring power-ring-b"></div>
+          <div class="power-card">
+            <small>POWER DELIVERY</small>
+            <div><span>BOOST</span><b data-counter="1.8">0.0</b><em>BAR</em></div>
+            <div><span>RESPONSE</span><b data-counter="98">0</b><em>%</em></div>
+            <div><span>STATUS</span><b>LIVE</b><em>CALIBRATION</em></div>
           </div>
-        </article>
+        </div>
+
+        <div class="scenario scenario-5" data-scenario="5">
+          <div class="dyno-roller dyno-left"></div>
+          <div class="dyno-roller dyno-right"></div>
+          <div class="dyno-panel">
+            <div class="dyno-head"><span>INSORIC VALIDATION</span><b>ROAD PROVEN</b></div>
+            <div class="dyno-graph"><i></i><em></em></div>
+            <div class="dyno-values"><div><small>SERIE</small><strong>625 PS</strong></div><div><small>BROO SETUP</small><strong>720 PS*</strong></div></div>
+            <p>*Beispielhafte Darstellung. Ergebnis abhängig vom Fahrzeug-Setup.</p>
+          </div>
+        </div>
+
+        <div class="scenario scenario-6" data-scenario="6">
+          <div class="final-vignette"></div>
+        </div>
+      </div>
+    </div>
+
+    <main class="story">
+      <section class="story-card is-active" data-story="0">
+        <div class="eyebrow"><span>01</span> INDIVIDUAL PERFORMANCE · EST. 2013</div>
+        <h1>DEIN BMW.<br><em>DEIN SETUP.</em><br>ECHTE PERFORMANCE.</h1>
+        <p>BROO verbindet individuelle ECU-Software, passende Hardware und reale Validierung zu einem abgestimmten Gesamtsystem.</p>
+        <div class="actions"><button data-go="1">EXPERIENCE STARTEN</button><a href="mailto:info@broo-performance.de?subject=Fahrzeuganfrage%20BROO%203D">FAHRZEUG ANFRAGEN</a></div>
       </section>
 
-      <section class="visual-column" aria-hidden="true">
-        <div class="visual-shell">
-          <div class="visual-copy">
-            <span data-scene-kicker>PREMIUM AUTOMOTIVE EXPERIENCE</span>
-            <strong data-scene-title>SCENE 01 / HERO</strong>
-          </div>
-          <model-viewer
-            class="car-model"
-            data-model
-            src="https://threejs.org/examples/models/gltf/ferrari.glb"
-            alt="Premium 3D sports car"
-            camera-controls
-            disable-pan
-            disable-zoom
-            interaction-prompt="none"
-            environment-image="neutral"
-            shadow-intensity="1.15"
-            shadow-softness="0.95"
-            tone-mapping="commerce"
-            exposure="1.05"
-            camera-orbit="-30deg 78deg 7.4m"
-            camera-target="0m 0.62m 0m"
-            field-of-view="18deg"
-            min-field-of-view="13deg"
-            max-field-of-view="24deg"
-            min-camera-orbit="auto auto 5.8m"
-            max-camera-orbit="auto auto 9m"
-            auto-rotate
-            rotation-per-second="8deg">
-          </model-viewer>
-          <div class="model-shine"></div>
-        </div>
+      <section class="story-card" data-story="1">
+        <div class="eyebrow"><span>02</span> SCHRITT 1 // FAHRZEUG VERSTEHEN</div>
+        <h2>ZUERST PRÜFEN.<br><em>DANN OPTIMIEREN.</em></h2>
+        <p>Fehlerspeicher, Softwarestand, verbaute Hardware, Laufleistung und Einsatzprofil bestimmen, welches Setup technisch sinnvoll ist.</p>
+        <ul><li>Originaldaten auslesen</li><li>Fahrzeugzustand bewerten</li><li>Leistungsziel definieren</li></ul>
+      </section>
+
+      <section class="story-card" data-story="2">
+        <div class="eyebrow"><span>03</span> SCHRITT 2 // CUSTOM ECU SOFTWARE</div>
+        <h2>KEIN DATENBANK-<br><em>FILE.</em></h2>
+        <p>Die Kalibrierung wird passend zu Motor, Getriebe und Hardware entwickelt. Nicht die größtmögliche Zahl zählt, sondern eine saubere Leistungsentfaltung.</p>
+        <div class="micro-grid"><div><b>Stage 1–3</b><span>Individuelle Ausbaustufen</span></div><div><b>Torque Control</b><span>Kontrollierte Drehmomentabgabe</span></div><div><b>Reversible</b><span>Rückrüstung auf Wunsch</span></div></div>
+      </section>
+
+      <section class="story-card" data-story="3">
+        <div class="eyebrow"><span>04</span> SCHRITT 3 // HARDWARE ALS SYSTEM</div>
+        <h2>MEHR POTENZIAL.<br><em>SAUBER ABGESTIMMT.</em></h2>
+        <p>Turbolader, Ladeluft, Abgasführung und Software werden gemeinsam geplant. So arbeitet jedes Bauteil auf dasselbe Leistungsziel hin.</p>
+      </section>
+
+      <section class="story-card" data-story="4">
+        <div class="eyebrow"><span>05</span> SCHRITT 4 // POWER DELIVERY</div>
+        <h2>MEHR DRUCK.<br><em>MEHR KONTROLLE.</em></h2>
+        <p>Das Ergebnis soll sich nicht nur auf dem Papier gut lesen: spontanes Ansprechverhalten, harmonischer Aufbau und kontrollierte thermische Belastung.</p>
+      </section>
+
+      <section class="story-card" data-story="5">
+        <div class="eyebrow"><span>06</span> SCHRITT 5 // VALIDIEREN</div>
+        <h2>NICHT NUR GEFÜHLT.<br><em>MESSBAR.</em></h2>
+        <p>Mit Insoric-Leistungsmessung unter realen Straßenbedingungen werden Leistungs- und Drehmomentverlauf nachvollziehbar geprüft.</p>
+      </section>
+
+      <section class="story-card story-contact" data-story="6">
+        <div class="eyebrow"><span>07</span> START YOUR PROJECT</div>
+        <h2>BEREIT FÜR DEIN<br><em>NÄCHSTES LEVEL?</em></h2>
+        <form data-mail-form>
+          <label><span>MARKE / MODELL</span><input name="vehicle" value="BMW " required></label>
+          <label><span>BAUJAHR / MOTOR</span><input name="engine" placeholder="z. B. 2021 · S63" required></label>
+          <label><span>SERIENLEISTUNG</span><input name="power" placeholder="z. B. 625 PS"></label>
+          <button type="submit">ANFRAGE VORBEREITEN</button>
+        </form>
+        <div class="contact-links"><a href="tel:+4915121993268">+49 151 21993268</a><a href="mailto:info@broo-performance.de">info@broo-performance.de</a></div>
       </section>
     </main>
 
-    <div class="bottom-ui">
-      <div class="progress-wrap"><span data-scroll-label>HERO</span><div class="progress"><i data-progress></i></div></div>
-      <div class="bottom-meta"><span data-scene-current>01</span><button class="sound-toggle" type="button" data-sound aria-pressed="false"><i></i>SOUND OFF</button></div>
+    <nav class="steps" aria-label="Experience Navigation">
+      <button class="is-active" data-go="0"><i></i><span>01</span></button>
+      <button data-go="1"><i></i><span>02</span></button>
+      <button data-go="2"><i></i><span>03</span></button>
+      <button data-go="3"><i></i><span>04</span></button>
+      <button data-go="4"><i></i><span>05</span></button>
+      <button data-go="5"><i></i><span>06</span></button>
+      <button data-go="6"><i></i><span>07</span></button>
+    </nav>
+
+    <div class="bottom-bar">
+      <div><span>SCROLL / SWIPE</span><b data-scene-label>BMW REVEAL</b></div>
+      <div class="progress"><i data-progress></i></div>
+      <span class="scene-count"><b data-current>01</b> / 07</span>
     </div>
 
-    <footer class="legal"><span>© 2026 BROO PERFORMANCE</span><a href="impressum.html">IMPRESSUM</a><a href="datenschutz.html">DATENSCHUTZ</a></footer>
+    <footer>
+      <span>© 2026 BROO PERFORMANCE</span>
+      <a href="impressum.html">IMPRESSUM</a>
+      <a href="datenschutz.html">DATENSCHUTZ</a>
+      <a class="credit" href="https://sketchfab.com/3d-models/free-hyper-realistic-bmw-m8-competition-model-3fdc4ab04e384ec5bdc26eed6700517f" target="_blank" rel="noopener">3D MODEL: BMW M8 BY JAMESJACKS · CC BY</a>
+    </footer>
   </div>
 
-  <noscript><div class="noscript">Diese interaktive Experience benötigt JavaScript. Kontakt: info@broo-performance.de</div></noscript>
+  <noscript><div class="noscript">Diese Experience benötigt JavaScript.</div></noscript>
   <script src="script.js"></script>
 </body>
 </html>
