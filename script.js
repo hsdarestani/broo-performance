@@ -1,4 +1,20 @@
 (() => {
+  const theme = document.createElement('link');
+  theme.rel = 'stylesheet';
+  theme.href = 'brand-theme.css';
+  document.head.appendChild(theme);
+
+  const applyOfficialBrand = () => {
+    document.querySelectorAll('.brand').forEach((brand) => {
+      const img = document.createElement('img');
+      img.src = 'assets/broo-logo.svg';
+      img.alt = 'BROO Performance';
+      img.decoding = 'async';
+      brand.replaceChildren(img);
+    });
+  };
+  applyOfficialBrand();
+
   const header = document.querySelector('[data-header]');
   const toggle = document.querySelector('[data-menu-toggle]');
   const mobileMenu = document.querySelector('[data-mobile-menu]');
@@ -23,24 +39,33 @@
     document.body.classList.toggle('menu-open', !open);
   });
 
-  mobileMenu?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-  window.addEventListener('resize', () => { if (window.innerWidth > 1050) closeMenu(); });
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -35px' });
-
-  document.querySelectorAll('.reveal').forEach((el, index) => {
-    el.style.transitionDelay = `${Math.min((index % 4) * 70, 210)}ms`;
-    observer.observe(el);
+  mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1050) closeMenu();
   });
 
-  document.querySelectorAll('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    document.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -35px' });
+
+    document.querySelectorAll('.reveal').forEach((el, index) => {
+      el.style.transitionDelay = `${Math.min((index % 4) * 70, 210)}ms`;
+      observer.observe(el);
+    });
+  }
+
+  document.querySelectorAll('[data-year]').forEach((el) => {
+    el.textContent = new Date().getFullYear();
+  });
 
   const form = document.getElementById('inquiry-form');
   const status = document.getElementById('form-status');
@@ -75,8 +100,10 @@
       'Viele Grüße', val('name')
     ].join('\n');
 
-    status.textContent = 'Dein E-Mail-Programm wird geöffnet …';
-    status.classList.add('show');
+    if (status) {
+      status.textContent = 'Dein E-Mail-Programm wird geöffnet …';
+      status.classList.add('show');
+    }
     window.location.href = `mailto:info@broo-performance.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   });
 })();
