@@ -8,6 +8,7 @@ Cloudflare Pages configuration:
 - Production branch: `3d-experience`
 - Framework preset: `None`
 - Build command: leave empty
-- Build output directory: `/`
+- Build output directory: leave the field empty (repository root `/`)
+- Root directory: leave empty
 
 The experience is a static full-screen Three.js website. Navigation uses mouse wheel, touch swipe, keyboard arrows, and chapter controls. There is no native vertical page scroll.
