@@ -1,82 +1,66 @@
-(() => {
-  const header = document.querySelector('[data-header]');
-  const toggle = document.querySelector('[data-menu-toggle]');
-  const mobileMenu = document.querySelector('[data-mobile-menu]');
+const $=(s,p=document)=>p.querySelector(s);const $$=(s,p=document)=>[...p.querySelectorAll(s)];
+const preloader=$('[data-preloader]');const loadBar=$('[data-load-bar]');const loadValue=$('[data-load-value]');
+let loadProgress=0;const loadTimer=setInterval(()=>{loadProgress=Math.min(loadProgress+Math.ceil(Math.random()*9),91);loadBar.style.width=loadProgress+'%';loadValue.textContent=loadProgress+'%';},120);
+const finishLoading=()=>{clearInterval(loadTimer);loadBar.style.width='100%';loadValue.textContent='100%';setTimeout(()=>preloader.classList.add('done'),280)};
+const chapters=$$('.chapter');const navButtons=$$('.scene-nav button');const progress=$('[data-progress]');const sceneCurrent=$('[data-scene-current]');const scrollLabel=$('[data-scroll-label]');const systemLabel=$('[data-system-label]');const hudX=$('[data-hud-x]');const hudY=$('[data-hud-y]');const fpsEl=$('[data-fps]');
+const labels=['IGNITION','SOFTWARE','POWER','HARDWARE','DYNO','CONTACT'];const systemLabels=['ECU LINK // ONLINE','CALIBRATION // ACTIVE','BOOST CONTROL // ARMED','HARDWARE MAP // SYNC','DYNO DATA // VERIFIED','PROJECT CHANNEL // OPEN'];
+let active=0,targetScene=0,lastChange=0,touchStartY=0,soundEnabled=false,audioCtx=null;
+function ping(freq=220){if(!soundEnabled)return;try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.11);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.12)}catch{}}
+function setScene(index,force=false){index=Math.max(0,Math.min(chapters.length-1,index));if(index===active&&!force)return;active=index;targetScene=index;chapters.forEach((el,i)=>el.classList.toggle('active',i===index));navButtons.forEach((el,i)=>el.classList.toggle('active',i===index));progress.style.width=(index/(chapters.length-1)*100)+'%';sceneCurrent.textContent=String(index+1).padStart(2,'0');scrollLabel.textContent=labels[index];systemLabel.textContent=systemLabels[index];document.body.dataset.scene=index;animateCounters(chapters[index]);ping(180+index*46)}
+function step(dir){const now=performance.now();if(now-lastChange<620)return;lastChange=now;setScene(active+dir)}
+window.addEventListener('wheel',e=>{e.preventDefault();if(Math.abs(e.deltaY)>8)step(e.deltaY>0?1:-1)},{passive:false});
+window.addEventListener('touchstart',e=>touchStartY=e.touches[0].clientY,{passive:true});window.addEventListener('touchend',e=>{const d=touchStartY-e.changedTouches[0].clientY;if(Math.abs(d)>42)step(d>0?1:-1)},{passive:true});
+window.addEventListener('keydown',e=>{if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();step(1)}if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();step(-1)}if(e.key==='Home')setScene(0);if(e.key==='End')setScene(chapters.length-1)});
+$$('[data-go]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();setScene(Number(el.dataset.go))}));
+function animateCounters(scope){$$('[data-counter]',scope).forEach(el=>{const end=Number(el.dataset.counter),decimal=String(end).includes('.');let start=performance.now();const run=t=>{const p=Math.min((t-start)/900,1);const v=end*(1-Math.pow(1-p,3));el.textContent=decimal?v.toFixed(1):Math.round(v);if(p<1)requestAnimationFrame(run)};requestAnimationFrame(run)})}
+const soundButton=$('[data-sound]');soundButton.addEventListener('click',()=>{soundEnabled=!soundEnabled;soundButton.classList.toggle('on',soundEnabled);soundButton.setAttribute('aria-pressed',soundEnabled);soundButton.lastChild.textContent=soundEnabled?' SOUND ON':' SOUND OFF';ping(330)});
+$('[data-mail-form]').addEventListener('submit',e=>{e.preventDefault();const data=new FormData(e.currentTarget);const subject='Fahrzeuganfrage über BROO 3D Experience';const body=`Hallo BROO Performance,\n\nich interessiere mich für eine Fahrzeugoptimierung.\n\nMarke / Modell: ${data.get('vehicle')}\nBaujahr / Motor: ${data.get('engine')}\nSerienleistung: ${data.get('power')||'-'}\n\nBitte senden Sie mir eine erste Einschätzung.\n`;location.href=`mailto:info@broo-performance.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`});
+setScene(0,true);
 
-  const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 20);
-  updateHeader();
-  window.addEventListener('scroll', updateHeader, { passive: true });
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const isMobile=matchMedia('(max-width: 900px)').matches;const canvas=$('[data-canvas]');
+import('https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js').then(THREE=>init3D(THREE)).catch(()=>{document.body.classList.add('no-webgl');finishLoading()});
 
-  const closeMenu = () => {
-    if (!toggle || !mobileMenu) return;
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Menü öffnen');
-    mobileMenu.classList.remove('is-open');
-    document.body.classList.remove('menu-open');
-  };
+function init3D(THREE){
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:!isMobile,alpha:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,isMobile?1.35:1.8));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;renderer.shadowMap.enabled=!isMobile;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x050806,.036);const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,150);camera.position.set(7,3.2,10);
+  const ambient=new THREE.HemisphereLight(0xc7ffd6,0x071008,1.2);scene.add(ambient);const key=new THREE.DirectionalLight(0xffffff,3.3);key.position.set(4,8,4);key.castShadow=!isMobile;scene.add(key);const rim=new THREE.PointLight(0xb7ff2a,45,26,2);rim.position.set(-4,2,-2);scene.add(rim);const red=new THREE.PointLight(0xff3a19,18,18,2);red.position.set(4,.5,-4);scene.add(red);
+  const root=new THREE.Group();scene.add(root);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0x060906,roughness:.75,metalness:.3,transparent:true,opacity:.9}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.22;floor.receiveShadow=true;scene.add(floor);
+  const grid=new THREE.GridHelper(80,80,0x4f7d20,0x172017);grid.position.y=-1.2;grid.material.transparent=true;grid.material.opacity=.38;scene.add(grid);
+  const rings=new THREE.Group();for(let i=0;i<9;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(5.4+i*.36,.012,5,100),new THREE.MeshBasicMaterial({color:0x6ea51b,transparent:true,opacity:.22-i*.013}));ring.rotation.y=Math.PI/2;ring.position.z=-i*3.8-4;rings.add(ring)}scene.add(rings);
+  const particlesGeo=new THREE.BufferGeometry();const count=isMobile?450:950;const pos=new Float32Array(count*3);for(let i=0;i<count;i++){pos[i*3]=(Math.random()-.5)*45;pos[i*3+1]=(Math.random()-.25)*20;pos[i*3+2]=(Math.random()-.5)*65}particlesGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));const particles=new THREE.Points(particlesGeo,new THREE.PointsMaterial({color:0x9acb43,size:.025,transparent:true,opacity:.45}));scene.add(particles);
 
-  toggle?.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!open));
-    toggle.setAttribute('aria-label', open ? 'Menü öffnen' : 'Menü schließen');
-    mobileMenu?.classList.toggle('is-open', !open);
-    document.body.classList.toggle('menu-open', !open);
-  });
+  const bodyMat=new THREE.MeshPhysicalMaterial({color:0x111713,metalness:.88,roughness:.2,clearcoat:1,clearcoatRoughness:.12});const glassMat=new THREE.MeshPhysicalMaterial({color:0x15201d,metalness:.35,roughness:.08,transmission:.15,transparent:true,opacity:.78});const darkMat=new THREE.MeshStandardMaterial({color:0x050705,metalness:.85,roughness:.3});const greenMat=new THREE.MeshStandardMaterial({color:0xb7ff2a,emissive:0x5d8f08,emissiveIntensity:1.7,metalness:.6,roughness:.3});
+  const car=new THREE.Group();root.add(car);const body=new THREE.Mesh(new THREE.BoxGeometry(5.7,.78,2.45),bodyMat);body.position.y=-.08;body.geometry.translate(0,0,0);body.castShadow=true;car.add(body);const hood=new THREE.Mesh(new THREE.BoxGeometry(2.1,.22,2.28),bodyMat);hood.position.set(1.68,.43,0);hood.rotation.z=-.04;car.add(hood);const rear=new THREE.Mesh(new THREE.BoxGeometry(1.3,.28,2.34),bodyMat);rear.position.set(-2.05,.38,0);car.add(rear);const cabin=new THREE.Mesh(new THREE.BoxGeometry(2.35,.86,1.95),glassMat);cabin.position.set(-.35,.7,0);cabin.rotation.z=-.06;car.add(cabin);const roof=new THREE.Mesh(new THREE.BoxGeometry(1.55,.12,1.84),bodyMat);roof.position.set(-.52,1.16,0);car.add(roof);const frontLip=new THREE.Mesh(new THREE.BoxGeometry(.38,.18,2.5),darkMat);frontLip.position.set(3.02,-.34,0);car.add(frontLip);const spoilerBar=new THREE.Mesh(new THREE.BoxGeometry(.18,.55,1.8),darkMat);spoilerBar.position.set(-2.82,.68,0);car.add(spoilerBar);const spoilerWing=new THREE.Mesh(new THREE.BoxGeometry(.72,.09,2.28),darkMat);spoilerWing.position.set(-2.9,.98,0);car.add(spoilerWing);
+  const wheels=[];for(const x of [-1.85,1.78])for(const z of [-1.23,1.23]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.58,.58,.38,32),darkMat);wheel.rotation.x=Math.PI/2;wheel.position.set(x,-.48,z);wheel.castShadow=true;const rimMesh=new THREE.Mesh(new THREE.CylinderGeometry(.34,.34,.4,12),greenMat);rimMesh.rotation.x=Math.PI/2;wheel.add(rimMesh);car.add(wheel);wheels.push(wheel)}
+  for(const z of [-.72,.72]){const head=new THREE.Mesh(new THREE.BoxGeometry(.08,.18,.55),greenMat);head.position.set(3.08,.12,z);car.add(head)}
+  car.rotation.y=-.52;car.position.set(1.2,.05,0);car.scale.setScalar(.95);
 
-  mobileMenu?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
-  window.addEventListener('resize', () => { if (window.innerWidth > 1050) closeMenu(); });
+  const ecu=new THREE.Group();root.add(ecu);const board=new THREE.Mesh(new THREE.BoxGeometry(4.5,.16,3.2),new THREE.MeshStandardMaterial({color:0x07130a,metalness:.45,roughness:.55,transparent:true,opacity:.96}));ecu.add(board);const chip=new THREE.Mesh(new THREE.BoxGeometry(1.45,.34,1.45),darkMat);chip.position.y=.25;ecu.add(chip);const chipTop=new THREE.Mesh(new THREE.BoxGeometry(1.05,.02,1.05),greenMat);chipTop.position.y=.44;ecu.add(chipTop);for(let i=0;i<12;i++){const line=new THREE.Mesh(new THREE.BoxGeometry(.65+Math.random()*1.3,.018,.025),greenMat);line.position.set((Math.random()-.5)*3.6,.11,(Math.random()-.5)*2.5);line.rotation.y=Math.random()>.5?0:Math.PI/2;ecu.add(line)}ecu.rotation.set(-.5,-.15,.18);ecu.position.set(1.2,.5,0);ecu.visible=false;
+  const turbo=new THREE.Group();root.add(turbo);const shell=new THREE.Mesh(new THREE.TorusGeometry(1.55,.5,28,70),new THREE.MeshPhysicalMaterial({color:0x273029,metalness:1,roughness:.22}));turbo.add(shell);const hub=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,.55,28),darkMat);hub.rotation.x=Math.PI/2;turbo.add(hub);for(let i=0;i<10;i++){const blade=new THREE.Mesh(new THREE.BoxGeometry(1.25,.06,.28),greenMat);blade.position.x=.72;blade.rotation.y=i/10*Math.PI*2;blade.rotateZ(.35);turbo.add(blade)}turbo.position.set(1.35,.5,0);turbo.rotation.set(.2,.5,.2);turbo.visible=false;
+  const dyno=new THREE.Group();root.add(dyno);for(const x of [-1.7,1.7])for(const z of [-1.05,1.05]){const roller=new THREE.Mesh(new THREE.CylinderGeometry(.58,.58,1.35,32),darkMat);roller.rotation.x=Math.PI/2;roller.position.set(x,-.78,z);dyno.add(roller)}const dynoLine=new THREE.Mesh(new THREE.BoxGeometry(6.5,.04,3.5),new THREE.MeshBasicMaterial({color:0xb7ff2a,transparent:true,opacity:.3,wireframe:true}));dynoLine.position.y=-1;dyno.add(dynoLine);dyno.visible=false;
+  const scan=new THREE.Mesh(new THREE.PlaneGeometry(7,3.8),new THREE.MeshBasicMaterial({color:0xb7ff2a,transparent:true,opacity:.08,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));scan.rotation.y=Math.PI/2;scan.position.x=-3.5;car.add(scan);
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -35px' });
-
-  document.querySelectorAll('.reveal').forEach((el, index) => {
-    el.style.transitionDelay = `${Math.min((index % 4) * 70, 210)}ms`;
-    observer.observe(el);
-  });
-
-  document.querySelectorAll('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
-
-  const form = document.getElementById('inquiry-form');
-  const status = document.getElementById('form-status');
-
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
-
-    const data = new FormData(form);
-    const val = (key) => String(data.get(key) || '').trim();
-    const subject = `Fahrzeuganfrage: ${val('make')} ${val('model')} (${val('year')})`;
-    const body = [
-      'Hallo BROO Performance,', '',
-      'ich interessiere mich für eine Fahrzeugoptimierung.', '',
-      'KONTAKT',
-      `Name: ${val('name')}`,
-      `E-Mail: ${val('email')}`,
-      `Telefon: ${val('phone') || '-'}`,
-      `Standort / PLZ: ${val('location') || '-'}`, '',
-      'FAHRZEUG',
-      `Marke: ${val('make')}`,
-      `Modell: ${val('model')}`,
-      `Baujahr: ${val('year')}`,
-      `Motor: ${val('engine')}`,
-      `Serienleistung: ${val('power') || '-'}`,
-      `Getriebe: ${val('gearbox') || '-'}`, '',
-      'ZIEL / UMBAUTEN',
-      val('message'), '',
-      'Viele Grüße', val('name')
-    ].join('\n');
-
-    status.textContent = 'Dein E-Mail-Programm wird geöffnet …';
-    status.classList.add('show');
-    window.location.href = `mailto:info@broo-performance.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  });
-})();
+  const configs=[
+    {cam:[7,3.2,10],look:[.5,.2,0],car:[1.2,.05,0],rot:[0,-.52,0],scale:.95,obj:'car'},
+    {cam:[6.4,3.8,8.4],look:[.8,.3,0],car:[4,-1,-2],rot:[0,-1.2,0],scale:.55,obj:'ecu'},
+    {cam:[7.5,2.6,8],look:[1,.2,0],car:[4,-1,-2],rot:[0,-.4,0],scale:.6,obj:'turbo'},
+    {cam:[6.8,2.4,9.2],look:[.7,.2,0],car:[1.3,.1,0],rot:[0,-.2,0],scale:.88,obj:'car'},
+    {cam:[7.8,3.6,10.6],look:[.5,-.1,0],car:[.9,.05,0],rot:[0,-.62,0],scale:.82,obj:'dyno'},
+    {cam:[5.5,2.8,11.5],look:[0,.1,0],car:[2.7,.0,-1.4],rot:[0,-.95,0],scale:.72,obj:'car'}
+  ];
+  let mouseX=0,mouseY=0,frames=0,fpsTime=performance.now();const lookAt=new THREE.Vector3();
+  addEventListener('pointermove',e=>{mouseX=(e.clientX/innerWidth-.5)*2;mouseY=(e.clientY/innerHeight-.5)*2},{passive:true});
+  const clock=new THREE.Clock();
+  function render(now){requestAnimationFrame(render);const dt=Math.min(clock.getDelta(),.04);const t=clock.elapsedTime;const c=configs[targetScene];const k=reduced?1:1-Math.pow(.0008,dt);
+    camera.position.x+=(c.cam[0]+mouseX*.22-camera.position.x)*k;camera.position.y+=(c.cam[1]-mouseY*.12-camera.position.y)*k;camera.position.z+=(c.cam[2]-camera.position.z)*k;lookAt.set(c.look[0],c.look[1],c.look[2]);camera.lookAt(lookAt);
+    car.position.x+=(c.car[0]-car.position.x)*k;car.position.y+=(c.car[1]-car.position.y)*k;car.position.z+=(c.car[2]-car.position.z)*k;car.rotation.x+=(c.rot[0]-car.rotation.x)*k;car.rotation.y+=(c.rot[1]-car.rotation.y)*k;car.rotation.z+=(c.rot[2]-car.rotation.z)*k;const s=car.scale.x+(c.scale-car.scale.x)*k;car.scale.setScalar(s);
+    const showCar=['car','dyno'].includes(c.obj);const showEcu=c.obj==='ecu';const showTurbo=c.obj==='turbo';car.visible=showCar||targetScene===3;ecu.visible=showEcu;turbo.visible=showTurbo;dyno.visible=c.obj==='dyno';
+    if(showEcu){ecu.rotation.y+=dt*.25;ecu.position.y=.45+Math.sin(t*1.5)*.08}if(showTurbo){turbo.rotation.y+=dt*.7;turbo.children.slice(2).forEach(b=>b.rotation.y+=dt*1.8)}if(car.visible){wheels.forEach(w=>w.rotation.y-=dt*(targetScene===4?5:.45));scan.position.x=((t*1.6)%7)-3.5;scan.visible=targetScene===3}
+    rings.position.z=(t*.6)%3.8;particles.rotation.y=t*.006;grid.position.z=(t*.45)%1;rim.position.x=-4+Math.sin(t*.7)*1.2;red.intensity=12+Math.sin(t*2)*5;
+    hudX.textContent=(48.135+mouseX*.003).toFixed(3);hudY.textContent=(11.582+mouseY*.003).toFixed(3);
+    renderer.render(scene,camera);frames++;if(now-fpsTime>600){fpsEl.textContent=Math.min(Math.round(frames*1000/(now-fpsTime)),99);frames=0;fpsTime=now}
+  }
+  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(max-width: 900px)').matches?1.35:1.8));renderer.setSize(innerWidth,innerHeight)});
+  finishLoading();requestAnimationFrame(render);
+}
